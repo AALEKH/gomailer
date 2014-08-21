@@ -1,58 +1,35 @@
 package main
 
-import ("bytes"
-		"net/smtp"
-		)
+import ( 
+	"log"
+	"net/mail"
+	"encoding/base64"
+	"net/smtp"
+	"fmt"
+	"strings"
+)
+/* Structure to have all credentials for the SMTP Server. Parameters are:
+	typeOfAuth : Type of Authentication to be used , for CRAMMD5Auth pass "CRAMMD5" whereas for PlainAuth use "PLAIN" as parameter value.
+	smtpServer:  Pass the SMTP server with port number here, for example : "mail.example.com:345".	  
+	username: Pass Username in here
+	password: Pass Password in here.
+*/	
 
-func main(){
-	type EmailUser struct {
-	  Username    string
-	  Password    string
-	  EmailServer string
-	  Port        int
-	};
-
-	emailUser := &EmailUser{'aalekh.nigam@gmail.com', '', 'smtp.gmail.com', 587};
-
-	auth := smtp.PlainAuth("",
-  		emailUser.Username,
-  		emailUser.Password,
-  		emailUser.EmailServer
-	);
-	type SmtpTemplateData struct {
-  From    string
-  To      string
-  Subject string
-  Body    string
+type smtpServerCredential struct {
+	typeOfAuth string
+	smtpServer string
+	username string
+	password string
+	crammd5String string
 }
 
-const emailTemplate = `From: {{.From}}
-To: {{.To}}
-Subject: {{.Subject}}
+// smtpServerCredential provides authentication features currently supported autherisation types are CRAMMD5Auth and PlainAuth
 
-{{.Body}}
-
-Sincerely,
-
-{{.From}}
-`
-var err error
-var doc bytes.Buffer
-
-context := &SmtpTemplateData{
-  "SmtpEmailSender",
-  "recipient@domain.com",
-  "This is the e-mail subject line!",
-  "Hello, this is a test e-mail body."
-}
-t := template.New("emailTemplate")
-t, err = t.Parse(emailTemplate)
-if err != nil {
-  log.Print("error trying to parse mail template")
-}
-err = t.Execute(&doc, context)
-if err != nil {
-  log.Print("error trying to execute mail template")
-}
-
-}
+func smtpServerCredential( smtpStruct smtpServerCredential ) string{
+	if smtpStruct.typeOfAuth == "CRAMMD5"{
+		auth := smtp.CRAMMD5Auth("", smtpStruct.username, smtpStruct.crammd5String)
+	}else if smtpStruct.typeOfAuth == "PLAIN"{
+		auth := smtp.PlainAuth("", smtpStruct.username, smtpStruct.password, smtpStruct.smtpServer)
+	}
+	return auth
+} 
