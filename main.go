@@ -18,6 +18,7 @@ import (
 type smtpServerCredential struct {
 	typeOfAuth string
 	smtpServer string
+	smtpPort string
 	username string
 	password string
 	crammd5String string
@@ -43,11 +44,11 @@ type mailContent struct {
 	body string
 }
 
-func sendMail(structContent mailContent, authMail string){
+func sendMail(structContent mailContent, authMail string,smtpServerSend smtpServerCredential){
 		header := make(map[string]string)
-		header["From"] = from.String()
-		header["To"] = to.String()
-		header["Subject"] = encodeRFC2047(title)
+		header["From"] = (structContent.sendersEmail).String()
+		header["To"] = (structContent.receipentEmail).String()
+		header["Subject"] = encodeRFC2047(structContent.subject)
 		header["MIME-Version"] = "1.0"
 		header["Content-Type"] = "text/plain; charset=\"utf-8\""
 		header["Content-Transfer-Encoding"] = "base64"
@@ -56,6 +57,24 @@ func sendMail(structContent mailContent, authMail string){
 		for meta, content := range header {
 		message += fmt.Sprintf("%s: %s\r\n", meta, content)
 		}
-		message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(body))
-		
+		message += "\r\n" + base64.StdEncoding.EncodeToString([]byte(structContent.body))
+			err := smtp.SendMail(
+				smtpServerSend.smtpServer + smtpServerSend.smtpPort,
+				authMail,
+				structContent.sendersEmail,
+				[]string{structContent.receipentEmail},
+				[]byte(message),
+				//[]byte("This is the email body."),
+			)
 }
+/*
+func main (){
+	enterServerCredential := smtpServerCredential{"PLAIN","smtp.gmail.com","587","aalekh.nigam@gmail.com",""}
+	typeOfAuth string
+	smtpServer string
+	smtpPort string
+	username string
+	password string
+	crammd5String string
+}\
+*/
