@@ -1,12 +1,12 @@
-package main 
+package gomailer 
 
-import "fmt"
-import "reflect"
-import "net/smtp"
-import "strings"
-import "net/mail"
-import "encoding/base64"
-import "log"
+import ("fmt"
+		"reflect"
+		"net/smtp"
+		"strings"
+		"net/mail"
+		"encoding/base64"
+		"log" )
 
 func encodeRFC2047(String string) string{
 // use mail's rfc2047 to encode any string
@@ -83,15 +83,17 @@ func sendMail(mai_two mailInfo, auth smtp.Auth) {
 	}
 }
 
+/*Example
+
 func main() {
 	//a := "aalekh.nigam@gmail.com"
-/*	smtpServer := "smtp.mandrillapp.com"
-	auth := smtp.PlainAuth(
-	"",
-	"aalekh.nigam@gmail.com",
-	"vI2qYIqqdPfpJnnSFGvhSA",
-	smtpServer,
-)*/
+	//smtpServer := "smtp.mandrillapp.com"
+	//auth := smtp.PlainAuth(
+	//"",
+	//"aalekh.nigam@gmail.com",
+	//"vI2qYIqqdPfpJnnSFGvhSA",
+	//smtpServer,
+//)
 
 	auth_two := authentication ("aalekh.nigam@gmail.com" , "vI2qYIqqdPfpJnnSFGvhSA" , "smtp.mandrillapp.com")	
 	fmt.Println(reflect.TypeOf(auth_two))
